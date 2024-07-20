@@ -2,6 +2,11 @@
 
 A minimal DSL that compiles to an object compatible with [api7/lua-resty-expr](https://github.com/api7/lua-resty-expr).
 
+## Installation
+```
+$ pip install sharh
+```
+
 ## Synopsis
 ```py
 from sharh.parser import parse

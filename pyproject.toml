@@ -1,0 +1,16 @@
+[project]
+name = "sharh"
+description = "tiny dsl for lua-resty-expr"
+version = "0.1.0"
+dependencies = [
+ "ply==3.11",
+]
+requires-python = ">= 3.9"
+authors = [
+ {name = "Kamyab Taghizadeh", email = "kamyab.zad@gmail.com"}
+]
+
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
