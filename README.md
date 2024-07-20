@@ -53,7 +53,7 @@ Please Note:
 |==|equals|*ip.addr == 127.0.0.1*|
 |!=|not equals|*http.headers.user_agent != 'curl/8.8'*|
 |in|exists in right-hand side list| *ip.geoip.asn in [123, 456]*|
-|not in|doesn't exist in right-hand side list|*ip.geoip.asn in [123, 456]*
+|not in|doesn't exist in right-hand side list|*ip.geoip.asn not in [123, 456]*
 |has|contains right-hand side item (only compatible with *list* type|*http.headers has 'user_agent'*|
 |not has|doesn't contain right-hand side item (only compatible with *list* type|*http.headers not has 'user_agent'*|
 |contains|contains right-hand side string (only compatible with *string* type|*http.header.user_agent contains 'curl'*|
@@ -73,7 +73,7 @@ expr1 and (expr2 or expr3)
 
 ### Notes
 * Right-hand side value for strings should be surrounded by single quoutes (e.g. `'test'`)
-* In case of *in* and *not in* operators, right-hand side value should be a list of values of related type:
+* In case of *in* and *not in* operators, right-hand side value must be a list of values of related type:
 	* `[1, 2, 3]` for number type
 	* `['test1', 'test2', 'test3']` for string type
-	* `[1.2.3.4/24, 4.5.6.7]` for IPv4 type (only with *in*/*not in* operator, each value of list could be in CIDR format)
+	* `[1.2.3.4/24, 4.5.6.7]` for IPv4 type (only with *in*/*not in* operator, each list item can be in CIDR format)
