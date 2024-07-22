@@ -137,6 +137,15 @@ class Literal:
     }
 
     def __init__(self, left, op, right):
+        if left == "http.secure":
+            if op != DSLOperators.EQ:
+                raise ValueError(f"'{op}' cannot be used for '{left}' variable")
+
+            if right not in ("on", "off"):
+                raise ValueError(f"'{left}' can only have on and off values")
+
+            right = True if right == "on" else False
+
         self.op = op
         self.left = left
         self.right = right

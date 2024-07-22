@@ -35,7 +35,7 @@ Please Note:
 |-|-|
 |http.method|string|
 |http.version|string|
-|http.secure|string|
+|http.secure|string only supporting '==' operator and 'on'/'off' values|
 |http.headers[*key*]|string|
 |http.headers.user_agent|string|
 |http.headers.x_forwarded_for|string|

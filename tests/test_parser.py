@@ -84,6 +84,20 @@ def test_ip_not_in():
 
     assert tree.to_expr_notation() == ["ip.addr", "!", "ipmatch", ["192.168.1.1/28", "127.0.0.1"]]
 
+def test_boolean_variables():
+    tree = parse("http.secure == 'on'")
+    assert tree.to_expr_notation() == ["http.secure", "==", True]
+
+    tree = parse("http.secure == 'off'")
+    assert tree.to_expr_notation() == ["http.secure", "==", False]
+
+    with pytest.raises(ParseError):
+        parse("http.secure != 'off")
+
+    with pytest.raises(ParseError):
+        parse("http.secure == 'invalid value")
+
+
 def test_multiple():
     tree = parse("http.headers.user_agent != 'curl' and ip.addr == 127.0.0.1")
 

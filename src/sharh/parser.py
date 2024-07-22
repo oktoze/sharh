@@ -127,7 +127,10 @@ def p_expression_unit(t):
     if re.match(t_VALUE_STR, value):
         value = value[1:-1]
 
-    tree.push([identifier, operation, value])
+    try:
+        tree.push([identifier, operation, value])
+    except ValueError as e:
+        raise ParseError(*e.args)
     t[0] = [[t[1], t[2], t[3]]]
 
 
