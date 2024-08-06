@@ -55,11 +55,11 @@ IP_OR_CIDR_PATTERN=r"((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}(\/([1-9]|[1-2]\d|
 
 t_IDENTIFIER_STR = (
     r"ip.geoip.country|ip.geoip.continent|"
-    r"http.method|http.version|http.secure|http.headers.user_agent|http.headers.x_forwarded_for|http.headers.referrer|"
+    r"http.method|http.version|http.secure|http.headers.user_agent|http.headers.x_forwarded_for|http.headers.referer|"
     r"http.headers\['[a-zA-Z0-9\-\_]+'\]|"
     r"device"
 )
-t_VALUE_STR = r"'[a-zA-Z0-9\/\-\.\s]+'"
+t_VALUE_STR = r"'[a-zA-Z0-9\/\-\.:\s]+'"
 t_VALUE_LIST_STR = rf"\[\s*({t_VALUE_STR}\s*,\s*)*{t_VALUE_STR}\s*\]"
 t_IDENTIFIER_LIST = r"http.headers"
 t_IDENTIFIER_IP = "ip.addr"

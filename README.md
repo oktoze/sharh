@@ -28,8 +28,7 @@ Result:
 
 Please Note:
  - The result is always in [disjunctive normal form](https://en.wikipedia.org/wiki/Disjunctive_normal_form).
- - In openresty, you can't directly use ngx.var for evaluation. You should provide the context with variables named according to this DSL convention. (e.g. provide a table with `ip.addr`  key instead of `remote_addr`)
- 
+
 ## Variables
 |**key**|**type**|
 |-|-|
@@ -39,7 +38,7 @@ Please Note:
 |http.headers[*key*]|string|
 |http.headers.user_agent|string|
 |http.headers.x_forwarded_for|string|
-|http.headers.referrer|string|
+|http.headers.referer|string|
 |http.headers|list\<string\>|
 |device|string|
 |ip.geoip.country|string|

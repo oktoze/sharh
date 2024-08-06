@@ -19,3 +19,8 @@ Issues = "https://github.com/oktoze/sharh/issues"
 [build-system]
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "src"
+]
