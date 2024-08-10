@@ -276,6 +276,7 @@ class Conjunction:
 class Disjunction:
     def __init__(self, conjunctions: List[Conjunction]):
         self.conjunctions = conjunctions
+        self.original_expr_was_dnf = True
 
     def __repr__(self):
         return f"Disjunction <{str(self)}>"

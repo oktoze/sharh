@@ -1,14 +1,18 @@
 import re
 from sharh.expr import Literal, Conjunction, Disjunction
 
+
 class ParseError(Exception):
     pass
+
 
 class ExpressionTree:
     def __init__(self):
         self.tree = []
         self.stack = []
         self.expressions = {}
+
+        self.original_expr_was_dnf = True
 
     def push(self, expr_args):
         self.stack.append(Literal(*expr_args))
@@ -18,6 +22,15 @@ class ExpressionTree:
         left = self.stack.pop()
 
         if operator == t_AND:
+            if (
+                (isinstance(left, Literal) or isinstance(left, Conjunction))
+                and isinstance(right, Disjunction)
+            ) or (
+                (isinstance(right, Literal) or isinstance(right, Conjunction))
+                and isinstance(left, Disjunction)
+            ):
+                self.original_expr_was_dnf = False
+
             self.stack.append(left * right)
         elif operator == t_OR:
             self.stack.append(left + right)
@@ -51,7 +64,9 @@ tokens = (
     "RPAREN",
 )
 
-IP_OR_CIDR_PATTERN=r"((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}(\/([1-9]|[1-2]\d|3[0-2]))?"
+IP_OR_CIDR_PATTERN = (
+    r"((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}(\/([1-9]|[1-2]\d|3[0-2]))?"
+)
 
 t_IDENTIFIER_STR = (
     r"ip.geoip.country|ip.geoip.continent|"
@@ -90,7 +105,6 @@ precedence = (
 )
 
 
-
 def t_error(t):
     t.lexer.skip(1)
 
@@ -99,8 +113,10 @@ import ply.lex as lex
 
 lexer = lex.lex()
 
+
 def p_error(t):
     raise ParseError()
+
 
 def p_expression_unit(t):
     """expression : IDENTIFIER_STR EQ VALUE_STR
@@ -151,7 +167,9 @@ import ply.yacc as yacc
 
 parser = yacc.yacc()
 
+
 def parse(s):
+    global tree
     parser.parse(s)
 
     try:
@@ -163,5 +181,8 @@ def parse(s):
         parsed = Conjunction([parsed])
     if isinstance(parsed, Conjunction):
         parsed = Disjunction([parsed])
+
+    parsed.original_expr_was_dnf = tree.original_expr_was_dnf
+    tree = ExpressionTree()
 
     return parsed
