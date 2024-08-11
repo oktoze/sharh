@@ -169,6 +169,9 @@ parser = yacc.yacc()
 
 
 def parse(s):
+    if not s.strip():
+        return Disjunction([])
+
     global tree
     parser.parse(s)
 

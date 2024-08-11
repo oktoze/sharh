@@ -267,7 +267,9 @@ class Conjunction:
             l.set_additional_var_mapping(additional_var_mapping)
 
     def to_expr_notation(self):
-        if len(self.literals) == 1:
+        if len(self.literals) == 0:
+            return []
+        elif len(self.literals) == 1:
             return self.literals[0].to_expr_notation()
 
         return ["AND", *map(lambda literal: literal.to_expr_notation(), self.literals)]
@@ -305,7 +307,9 @@ class Disjunction:
             conj.set_additional_var_mapping(additional_var_mapping)
 
     def to_expr_notation(self):
-        if len(self.conjunctions) == 1:
+        if len(self.conjunctions) == 0:
+            return []
+        elif len(self.conjunctions) == 1:
             return self.conjunctions[0].to_expr_notation()
 
         return [
