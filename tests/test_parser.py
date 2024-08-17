@@ -85,14 +85,11 @@ def test_ip_not_in():
     assert tree.to_expr_notation() == ["remote_addr", "!", "ipmatch", ["192.168.1.1/28", "127.0.0.1"]]
 
 def test_boolean_variables():
-    tree = parse("http.secure == 'on'")
+    tree = parse("http.secure == true")
     assert tree.to_expr_notation() == ["scheme", "==", "https"]
 
-    tree = parse("http.secure == 'off'")
+    tree = parse("http.secure == false")
     assert tree.to_expr_notation() == ["scheme", "==", "http"]
-
-    with pytest.raises(ParseError):
-        parse("http.secure != 'off")
 
     with pytest.raises(ParseError):
         parse("http.secure == 'invalid value")

@@ -50,6 +50,8 @@ tokens = (
     "IDENTIFIER_NUM",
     "VALUE_NUM",
     "VALUE_LIST_NUM",
+    "IDENTIFIER_BOOL",
+    "VALUE_BOOL",
     "EQ",
     "NEQ",
     "IN",
@@ -70,7 +72,7 @@ IP_OR_CIDR_PATTERN = (
 
 t_IDENTIFIER_STR = (
     r"ip.geoip.country|ip.geoip.continent|"
-    r"http.method|http.version|http.secure|http.headers.user_agent|http.headers.x_forwarded_for|http.headers.referer|"
+    r"http.method|http.version|http.headers.user_agent|http.headers.x_forwarded_for|http.headers.referer|"
     r"http.headers\['[a-zA-Z0-9\-\_]+'\]|"
     r"device"
 )
@@ -83,6 +85,8 @@ t_VALUE_LIST_IP_CIDR = rf"\[\s*({IP_OR_CIDR_PATTERN}\s*,\s*)*{IP_OR_CIDR_PATTERN
 t_IDENTIFIER_NUM = "ip.geoip.asn"
 t_VALUE_NUM = "[0-9]{1,11}"
 t_VALUE_LIST_NUM = rf"\[\s*({t_VALUE_NUM}\s*,\s*)*{t_VALUE_NUM}\s*\]"
+t_IDENTIFIER_BOOL = r"http.secure"
+t_VALUE_BOOL = r"(true)|(false)"
 t_EQ = r"=="
 t_NEQ = r"!="
 t_IN = r"in"
@@ -134,7 +138,8 @@ def p_expression_unit(t):
     | IDENTIFIER_NUM EQ VALUE_NUM
     | IDENTIFIER_NUM NEQ VALUE_NUM
     | IDENTIFIER_NUM IN VALUE_LIST_NUM
-    | IDENTIFIER_NUM NOT_IN VALUE_LIST_NUM"""
+    | IDENTIFIER_NUM NOT_IN VALUE_LIST_NUM
+    | IDENTIFIER_BOOL EQ VALUE_BOOL"""
 
     identifier = t[1]
     operation = t[2]
@@ -142,6 +147,8 @@ def p_expression_unit(t):
 
     if re.match(t_VALUE_STR, value):
         value = value[1:-1]
+    elif re.match(t_VALUE_BOOL, value):
+        value = True if value == "true" else False
 
     try:
         tree.push([identifier, operation, value])
