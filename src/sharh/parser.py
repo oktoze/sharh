@@ -21,7 +21,7 @@ class ExpressionTree:
         right = self.stack.pop()
         left = self.stack.pop()
 
-        if operator == t_AND:
+        if re.match(t_AND, operator):
             if (
                 (isinstance(left, Literal) or isinstance(left, Conjunction))
                 and isinstance(right, Disjunction)
@@ -32,7 +32,7 @@ class ExpressionTree:
                 self.original_expr_was_dnf = False
 
             self.stack.append(left * right)
-        elif operator == t_OR:
+        elif re.match(t_OR, operator):
             self.stack.append(left + right)
 
 
@@ -95,8 +95,8 @@ t_HAS = r"has"
 t_NOT_HAS = r"not\ has"
 t_CONTAINS = r"contains"
 t_NOT_CONTAINS = r"not\ contains"
-t_AND = r"and"
-t_OR = r"or"
+t_AND = r"(and)|(AND)"
+t_OR = r"(or)|(OR)"
 t_LPAREN = r"\("
 t_RPAREN = r"\)"
 
@@ -161,8 +161,7 @@ def p_expression_binop(t):
     """expression : expression AND expression
     | expression OR expression"""
 
-    if t[2] in [t_AND, t_OR]:
-        tree.commit(t[2])
+    tree.commit(t[2])
 
 
 def p_expression_group(t):
