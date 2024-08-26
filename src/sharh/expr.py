@@ -123,11 +123,11 @@ class DSLOperators:
     EQ = "=="
     NEQ = "!="
     HAS = "has"
-    NOT_HAS = "not has"
+    NOT_HAS = "!has"
     CONTAINS = "contains"
-    NOT_CONTAINS = "not contains"
+    NOT_CONTAINS = "!contains"
     IN = "in"
-    NOT_IN = "not in"
+    NOT_IN = "!in"
 
 
 class EXPROperators:

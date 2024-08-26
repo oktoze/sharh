@@ -21,7 +21,7 @@ def test_string_identifer_contains():
     assert tree.to_expr_notation() == ["http_user_agent", "~~", "curl/8.1-beta"]
 
 def test_string_identifier_not_contains():
-    tree = parse("http.headers.user_agent not contains 'curl/8.1-beta'")
+    tree = parse("http.headers.user_agent !contains 'curl/8.1-beta'")
 
     assert tree.to_expr_notation() == ["http_user_agent", "!", "~~", "curl/8.1-beta"]
 
@@ -30,7 +30,7 @@ def test_string_identifier_in():
     assert tree.to_expr_notation() == ["http_user_agent", "in", ['curl', 'firefox', 'chrome']]
 
 def test_string_identifier_not_in():
-    tree = parse("http.headers.user_agent not in ['curl' ,'firefox',  'chrome' ]")
+    tree = parse("http.headers.user_agent !in ['curl' ,'firefox',  'chrome' ]")
     assert tree.to_expr_notation() == ["http_user_agent", "!", "in", ['curl', 'firefox', 'chrome']]
 
 def test_string_identifier_dont_support_has():
@@ -48,7 +48,7 @@ def test_list_identifier_has():
     assert tree.to_expr_notation() == ["headers", "has", "test-key"]
 
 def test_list_identifier_has_not():
-    tree = parse("http.headers not has 'test-key'")
+    tree = parse("http.headers !has 'test-key'")
 
     assert tree.to_expr_notation() == ["headers", "!", "has", "test-key"]
 
@@ -80,7 +80,7 @@ def test_ip_in():
     assert tree.to_expr_notation() == ["remote_addr", "ipmatch", ["192.168.1.1/28", "127.0.0.1"]]
 
 def test_ip_not_in():
-    tree = parse("ip.addr not in [192.168.1.1/28, 127.0.0.1]")
+    tree = parse("ip.addr !in [192.168.1.1/28, 127.0.0.1]")
 
     assert tree.to_expr_notation() == ["remote_addr", "!", "ipmatch", ["192.168.1.1/28", "127.0.0.1"]]
 

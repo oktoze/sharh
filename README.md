@@ -52,11 +52,11 @@ Please Note:
 |==|equals|*ip.addr == 127.0.0.1*|
 |!=|not equals|*http.headers.user_agent != 'curl/8.8'*|
 |in|exists in right-hand side list| *ip.geoip.asn in [123, 456]*|
-|not in|doesn't exist in right-hand side list|*ip.geoip.asn not in [123, 456]*
+|!in|doesn't exist in right-hand side list|*ip.geoip.asn !in [123, 456]*
 |has|contains right-hand side item (only compatible with *list* type|*http.headers has 'user_agent'*|
-|not has|doesn't contain right-hand side item (only compatible with *list* type|*http.headers not has 'user_agent'*|
+|!has|doesn't contain right-hand side item (only compatible with *list* type|*http.headers !has 'user_agent'*|
 |contains|contains right-hand side string (only compatible with *string* type|*http.header.user_agent contains 'curl'*|
-|not contains|doesn't contain right-hand side string (only compatible with *string* type|*http.header.user_agent not contains 'curl'*|
+|!contains|doesn't contain right-hand side string (only compatible with *string* type|*http.header.user_agent !contains 'curl'*|
 
 ## Expressions
 ### Grammar
