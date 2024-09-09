@@ -1,5 +1,6 @@
 import pytest
 from sharh.parser import parse, ParseError
+from sharh.expr import Literal
 
 def test_string_identifier_eq():
     tree = parse("http.headers.user_agent == 'curl/8.1-beta'")
@@ -65,6 +66,16 @@ def test_asn_in():
     tree = parse("ip.geoip.asn in [  1234 , 345 ]")
     assert tree.to_expr_notation() == ["geoip2_data_asn", "in", ["1234", "345"]]
 
+def test_ip_reputation_ge():
+    tree = parse("ip.reputation >= 10")
+
+    assert tree.to_expr_notation() == ["ip.reputation", ">=", "10"]
+
+def test_ip_reputation_le():
+    tree = parse("ip.reputation <= 10")
+
+    assert tree.to_expr_notation() == ["ip.reputation", "<=", "10"]
+
 def test_ip():
     tree = parse("ip.addr == 127.0.0.1")
 
@@ -101,11 +112,44 @@ def test_multiple():
     assert tree.to_expr_notation() == ["AND", ["http_user_agent", "~=", "curl"], ["remote_addr", "==", "127.0.0.1"]]
 
 
-def test_additional_var_mapping():
+def test_custom_literal_classes_override_lvalue():
     tree = parse("http.headers.referer == 'https://github.com'")
 
     assert tree.to_expr_notation() == ["http_referer", "==", "https://github.com"]
 
-    tree.set_additional_var_mapping({"http.headers.referer": "http_referrer"})
+    class CustomReferer(Literal):
+        def get_lvalue(self):
+            return "custom_header"
 
-    assert tree.to_expr_notation() == ["http_referrer", "==", "https://github.com"]
+    tree = parse("http.headers.referer == 'https://github.com'", {"http.headers.referer": CustomReferer})
+
+    assert tree.to_expr_notation() == ["custom_header", "==", "https://github.com"]
+
+def test_custom_literal_classes_override_and_add_validation():
+    tree = parse("ip.reputation == 1000")
+
+    assert tree.to_expr_notation() == ["ip.reputation", "==", "1000"]
+
+    class CustomReputation(Literal):
+        def __init__(self, left, op, right):
+            print(int(right))
+            if int(right) > 100 or int(right) < 1:
+                raise ParseError
+
+            super().__init__(left, op, right)
+
+        def get_lvalue(self):
+            return "reputation"
+
+        def get_rvalue(self):
+            return int(self.right)
+
+    with pytest.raises(ParseError):
+        tree = parse("ip.reputation >= 101", {"ip.reputation": CustomReputation})
+
+    with pytest.raises(ParseError):
+        tree = parse("ip.reputation >= 101", {"ip.reputation": CustomReputation})
+
+    tree = parse("ip.reputation >= 50", {"ip.reputation": CustomReputation})
+
+    assert tree.to_expr_notation() == ["reputation", ">=", 50]

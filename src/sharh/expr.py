@@ -122,6 +122,8 @@ def mul_disjunction_disjunction(d1: Disjunction, d2: Disjunction):
 class DSLOperators:
     EQ = "=="
     NEQ = "!="
+    GE = ">="
+    LE = "<="
     HAS = "has"
     NOT_HAS = "!has"
     CONTAINS = "contains"
@@ -134,6 +136,8 @@ class EXPROperators:
     NOT = "!"
     EQ = "=="
     NEQ = "~="
+    GE = ">="
+    LE = "<="
     HAS = "has"
     CONTAINS = "~~"
     IN = "in"
@@ -144,6 +148,8 @@ class Literal:
     EXPR_OP = {
         DSLOperators.EQ: [EXPROperators.EQ],
         DSLOperators.NEQ: [EXPROperators.NEQ],
+        DSLOperators.GE: [EXPROperators.GE],
+        DSLOperators.LE: [EXPROperators.LE],
         DSLOperators.HAS: [EXPROperators.HAS],
         DSLOperators.NOT_HAS: [EXPROperators.NOT, EXPROperators.HAS],
         DSLOperators.CONTAINS: [EXPROperators.CONTAINS],
@@ -156,8 +162,6 @@ class Literal:
         self.op = op
         self.left = left
         self.right = right
-
-        self.additional_var_mapping = {}
 
     def __hash__(self):
         return hash(str(self))
@@ -187,9 +191,6 @@ class Literal:
         if isinstance(other, Disjunction):
             return add_literal_disjunction(self, other)
 
-    def set_additional_var_mapping(self, additional_var_mapping: Dict[str, str]):
-        self.additional_var_mapping = additional_var_mapping
-
     def get_op(self):
         if self.left == "ip.addr":
             if self.op == DSLOperators.IN:
@@ -200,10 +201,6 @@ class Literal:
         return self.EXPR_OP[self.op]
 
     def get_lvalue(self):
-        v = self.additional_var_mapping.get(self.left)
-        if v:
-            return v
-
         v = VAR_MAPPING.get(self.left)
         if v:
             return v
@@ -255,10 +252,6 @@ class Conjunction:
         if isinstance(other, Disjunction):
             return add_conjunction_disjunction(self, other)
 
-    def set_additional_var_mapping(self, additional_var_mapping: Dict[str, str]):
-        for l in self.literals:
-            l.set_additional_var_mapping(additional_var_mapping)
-
     def to_expr_notation(self):
         if len(self.literals) == 0:
             return []
@@ -294,10 +287,6 @@ class Disjunction:
             return add_conjunction_disjunction(other, self, conjunction_first=False)
         if isinstance(other, Disjunction):
             return add_disjunction_disjunction(self, other)
-
-    def set_additional_var_mapping(self, additional_var_mapping: Dict[str, str]):
-        for conj in self.conjunctions:
-            conj.set_additional_var_mapping(additional_var_mapping)
 
     def to_expr_notation(self):
         if len(self.conjunctions) == 0:

@@ -5,17 +5,21 @@ from sharh.expr import Literal, Conjunction, Disjunction
 class ParseError(Exception):
     pass
 
-
 class ExpressionTree:
-    def __init__(self):
+    def __init__(self, custom_literal_classes=None):
         self.tree = []
         self.stack = []
         self.expressions = {}
+        self.custom_literal_classes = custom_literal_classes or {}
 
         self.original_expr_was_dnf = True
 
     def push(self, expr_args):
-        self.stack.append(Literal(*expr_args))
+        LiteralClass = Literal
+        if self.custom_literal_classes.get(expr_args[0]):
+            LiteralClass = self.custom_literal_classes[expr_args[0]]
+
+        self.stack.append(LiteralClass(*expr_args))
 
     def commit(self, operator):
         right = self.stack.pop()
@@ -54,6 +58,8 @@ tokens = (
     "VALUE_BOOL",
     "EQ",
     "NEQ",
+    "GE",
+    "LE",
     "IN",
     "NOT_IN",
     "HAS",
@@ -82,13 +88,15 @@ t_IDENTIFIER_LIST = r"http.headers"
 t_IDENTIFIER_IP = "ip.addr"
 t_VALUE_IP = r"((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}"
 t_VALUE_LIST_IP_CIDR = rf"\[\s*({IP_OR_CIDR_PATTERN}\s*,\s*)*{IP_OR_CIDR_PATTERN}\s*\]"
-t_IDENTIFIER_NUM = "ip.geoip.asn"
+t_IDENTIFIER_NUM = r"ip.geoip.asn|ip.reputation"
 t_VALUE_NUM = "[0-9]{1,11}"
 t_VALUE_LIST_NUM = rf"\[\s*({t_VALUE_NUM}\s*,\s*)*{t_VALUE_NUM}\s*\]"
 t_IDENTIFIER_BOOL = r"http.secure"
 t_VALUE_BOOL = r"(true)|(false)"
 t_EQ = r"=="
 t_NEQ = r"!="
+t_GE = r">="
+t_LE = r"<="
 t_IN = r"in"
 t_NOT_IN = r"!in"
 t_HAS = r"has"
@@ -137,6 +145,8 @@ def p_expression_unit(t):
     | IDENTIFIER_IP NOT_IN VALUE_LIST_IP_CIDR
     | IDENTIFIER_NUM EQ VALUE_NUM
     | IDENTIFIER_NUM NEQ VALUE_NUM
+    | IDENTIFIER_NUM GE VALUE_NUM
+    | IDENTIFIER_NUM LE VALUE_NUM
     | IDENTIFIER_NUM IN VALUE_LIST_NUM
     | IDENTIFIER_NUM NOT_IN VALUE_LIST_NUM
     | IDENTIFIER_BOOL EQ VALUE_BOOL"""
@@ -174,12 +184,17 @@ import ply.yacc as yacc
 parser = yacc.yacc()
 
 
-def parse(s):
+def parse(s, custom_literal_classes = None):
     if not s.strip():
         return Disjunction([])
 
     global tree
+    tree = ExpressionTree(custom_literal_classes)
     parser.parse(s)
+
+    if custom_literal_classes is not None:
+        global CUSTOM_LITERAL_CLASSES
+        CUSTOM_LITERAL_CLASSES = custom_literal_classes
 
     try:
         parsed = tree.stack.pop()
@@ -192,6 +207,5 @@ def parse(s):
         parsed = Disjunction([parsed])
 
     parsed.original_expr_was_dnf = tree.original_expr_was_dnf
-    tree = ExpressionTree()
 
     return parsed

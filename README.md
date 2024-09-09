@@ -45,12 +45,15 @@ Please Note:
 |ip.geoip.continent|string|
 |ip.addr|IPv4|
 |ip.geoip.asn|number|
+|ip.reputation|number|
 
 ## Operators
 |**operator**|**description**|**example**|
 |-|-|-|
 |==|equals|*ip.addr == 127.0.0.1*|
 |!=|not equals|*http.headers.user_agent != 'curl/8.8'*|
+|>=|greater than or equal to|*ip.reputation >= 3*|
+|<=|lesser than or equal to|*ip.reputation <= 3*|
 |in|exists in right-hand side list| *ip.geoip.asn in [123, 456]*|
 |!in|doesn't exist in right-hand side list|*ip.geoip.asn !in [123, 456]*
 |has|contains right-hand side item (only compatible with *list* type|*http.headers has 'user_agent'*|

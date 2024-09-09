@@ -1,7 +1,7 @@
 [project]
 name = "sharh"
 description = "tiny dsl for lua-resty-expr"
-version = "0.8.0"
+version = "0.9.0"
 dependencies = [
  "ply==3.11",
 ]
