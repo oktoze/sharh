@@ -82,7 +82,7 @@ t_IDENTIFIER_STR = (
     r"http.headers\['[a-zA-Z0-9\-\_]+'\]|"
     r"device"
 )
-t_VALUE_STR = r"'[a-zA-Z0-9\/\-\.:\s]+'"
+t_VALUE_STR = r"'[a-zA-Z0-9\/\-\.:,%\?=\s]+'"
 t_VALUE_LIST_STR = rf"\[\s*({t_VALUE_STR}\s*,\s*)*{t_VALUE_STR}\s*\]"
 t_IDENTIFIER_LIST = r"http.headers"
 t_IDENTIFIER_IP = "ip.addr"

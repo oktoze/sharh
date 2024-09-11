@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from functools import reduce
-from typing import Dict, List
+from typing import List
 
 VAR_MAPPING = {
     "http.method": "request_method",
